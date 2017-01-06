@@ -1,0 +1,6 @@
+---
+# tasks file for ansible-stow
+
+- name: stow files/folders
+  stow: name="{{ freckles_app_name }}" state=present source_dir="{{ freckles_dotfiles_base_dir }}" target_dir="{{ freckles_target_base_dir }}"
+  when: "{{ freckles_stow }}"
