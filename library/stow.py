@@ -13,7 +13,7 @@ from ansible.module_utils.basic import AnsibleModule
 
 IGNORE_STRING="freckles*"
 
-def stow(module):
+def stow(module, stow_version):
 
     params = module.params
 
@@ -22,14 +22,19 @@ def stow(module):
     source_dir = params['source_dir']
     target_dir = params['target_dir']
 
-    cmd = "stow -v --ignore={} -d {} -t {} -R {}".format(IGNORE_STRING, source_dir, target_dir, name)
+    if stow_version.startswith("1") or stow_version.startswith("2.0"):
+        ignore_parameter = ""
+    else:
+        ignore_parameter = "--ignore={}".format(IGNORE_STRING)
+
+    cmd = "stow -v {} -d {} -t {} -R {}".format(ignore_parameter, source_dir, target_dir, name)
 
     rc, stdout, stderr = module.run_command(cmd, check_rc=False)
 
     if rc == 0:
         module.exit_json(changed=True, stderr=stderr)
     else:
-        module.fail_json(msg="failed to stow {}: {}".format(name, stderr))
+        module.fail_json(msg="failed to stow ( {} ) {}: {}".format(cmd, name, stderr))
 
 
 def main():
@@ -43,7 +48,16 @@ def main():
         )
     )
 
-    stow(module)
+    cmd = "stow --version"
+    rc, stdout, stderr = module.run_command(cmd, check_rc=False)
+
+    if rc == 0:
+        stow_version = stdout.split()[-1]
+        # module.exit_json(changed=True, version=stow_version)
+    else:
+        module.fail_json("Can't execute/find 'stow': {}".format(stderr))
+
+    stow(module, stow_version)
 
 if __name__ == '__main__':
     main()
