@@ -2,4 +2,4 @@
 # tasks file for ansible-stow
 
 - name: stow files/folders
-  stow: name="{{ app_name }}" state=present source_dir="{{ dotfiles_base_dir }}" stow_target_dir="{{ target_base_dir }}"
+  stow: name="{{ app_name }}" state=present source_dir="{{ dotfiles_base_dir }}" target_dir="{{ stow_target_dir }}"
