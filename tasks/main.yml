@@ -3,3 +3,4 @@
 
 - name: stow files/folders
   stow: name="{{ item_name }}" state=present source_dir="{{ dotfiles_base_dir }}" target_dir="{{ stow_target_dir }}"
+  ignore_errors: "{{ ignore_errors | default(yes) }}"
